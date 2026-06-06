@@ -1,0 +1,100 @@
+parakeet.cpp Windows x64 CUDA release bundle
+Built: 2026-06-06
+
+Source
+- Repository: https://github.com/mudler/parakeet.cpp
+- Commit: 50dfc24b4faa4ee23a1f59401f1d0c87fc4042b0
+- Local build fixes applied:
+  - src/fft.cpp: replace MSVC-undefined M_PI with a local constexpr kPi.
+  - src/mel_gpu.cpp: replace MSVC-undefined M_PI with a local constexpr kPi.
+  - CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=ON was used so MSVC emits parakeet.lib for parakeet.dll.
+
+Toolchain
+- Windows x64
+- CUDA Toolkit: 12.8, V12.8.61
+- CMake: 4.3.3
+- Compiler: Microsoft (R) C/C++ Optimizing Compiler Version 19.44.35227 for x64
+- Visual Studio: Visual Studio Build Tools 2022 17.14.33
+- Target CUDA architecture: 86 (for NVIDIA GeForce RTX 3050 Ti Laptop GPU)
+
+Configure Command
+cmd.exe /c "call ""<VS2022 Build Tools>\\VC\\Auxiliary\\Build\\vcvars64.bat"" && cmake -S .\\parakeet.cpp -B .\\parakeet.cpp\\build-cuda-ninja -G Ninja -DCMAKE_MAKE_PROGRAM=""<Ninja>\\ninja.exe"" -DCMAKE_C_COMPILER=cl.exe -DCMAKE_CXX_COMPILER=cl.exe -DCMAKE_BUILD_TYPE=Release -DPARAKEET_BUILD_CLI=ON -DPARAKEET_SHARED=ON -DPARAKEET_GGML_CUDA=ON -DGGML_NATIVE=OFF -DCMAKE_CUDA_ARCHITECTURES=86 -DGGML_CUDA_FA=OFF -DGGML_CUDA_GRAPHS=OFF -DGGML_CUDA_NCCL=OFF -DGGML_CUDA_FORCE_CUBLAS=ON -DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=ON"
+
+Build Command
+cmd.exe /c "call ""<VS2022 Build Tools>\\VC\\Auxiliary\\Build\\vcvars64.bat"" && cmake --build .\parakeet.cpp\build-cuda-ninja --parallel 8"
+
+Model
+- Downloaded: https://huggingface.co/mudler/parakeet-cpp-gguf/resolve/main/tdt_ctc-110m-f16.gguf
+- Packaged as: models/tdt_ctc-110m-f16.gguf
+
+Smoke Test Audio
+- Source: https://huggingface.co/datasets/Narsil/asr_dummy/resolve/main/mlk.flac
+- Converted with ffmpeg to 16 kHz mono WAV: samples/test.wav
+- Expected/transcribed text:
+  I have a dream that one day this nation will rise up and live out the true meaning of its creed.
+
+Smoke Test: Model Info
+Command:
+parakeet-cli.exe info models\tdt_ctc-110m-f16.gguf
+
+Output:
+parakeet.cpp 0.0.1
+model: .\models\parakeet\tdt_ctc-110m-f16.gguf
+  arch            : hybrid_tdt_ctc
+  d_model/layers/heads: 512 / 17 / 8
+  conv_kernel/norm: 9 / batch_norm
+  xscaling        : false
+  subsampling     : x8 (ch=256)
+  mel/n_fft/win/hop: 80 / 512 / 400 / 160
+  vocab/blank     : 1024 / 1024
+  tdt durations   : [0,1,2,3,4]
+  att_context     : [-1,-1] regular
+  causal ds/conv  : false / false
+
+Smoke Test: CUDA Transcription
+Command:
+parakeet-cli.exe transcribe --model models\tdt_ctc-110m-f16.gguf --input samples\test.wav
+
+Output:
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 16302 MiB):
+  Device 0: NVIDIA CUDA-capable GPU detected by build host driver
+[parakeet] pk::Backend using GPU device: CUDA0
+I have a dream that one day this nation will rise up and live out the true meaning of its creed.
+
+Measured wall time on build host: recorded during smoke test; omitted from public notes because it is hardware-specific
+
+Smoke Test: CPU-Forced Transcription
+Command:
+$env:PARAKEET_DEVICE='cpu'
+parakeet-cli.exe transcribe --model models\tdt_ctc-110m-f16.gguf --input samples\test.wav
+
+Output:
+I have a dream that one day this nation will rise up and live out the true meaning of its creed.
+
+Measured wall time on build host: recorded during smoke test; omitted from public notes because it is hardware-specific
+
+CUDA Backend Detection
+- CUDA backend detected: yes.
+- Evidence: default transcription printed ggml_cuda_init and "[parakeet] pk::Backend using GPU device: CUDA0".
+- Note: CPU and CUDA timings are close on this very short sample; backend detection is based on runtime logs, not speed alone.
+
+Packaged Files
+- bin/cublas64_12.dll (113712640 bytes)
+- bin/cublasLt64_12.dll (692441600 bytes)
+- bin/cudart64_12.dll (573952 bytes)
+- bin/ggml-base.dll (1199104 bytes)
+- bin/ggml-cpu.dll (1012224 bytes)
+- bin/ggml-cuda.dll (43427840 bytes)
+- bin/ggml.dll (168960 bytes)
+- bin/msvcp140.dll (553552 bytes)
+- bin/parakeet-cli.exe (131072 bytes)
+- bin/parakeet.dll (670208 bytes)
+- bin/parakeet.lib (1485220 bytes)
+- bin/vcruntime140_1.dll (47264 bytes)
+- bin/vcruntime140.dll (123472 bytes)
+- models/tdt_ctc-110m-f16.gguf (267452544 bytes)
+
+Runtime Notes
+- nvcuda.dll is intentionally not packaged; it is supplied by the installed NVIDIA driver on the target machine.
+- The package includes CUDA runtime/cuBLAS DLLs from CUDA Toolkit 12.8 and MSVC runtime DLLs used by the built binaries.
+

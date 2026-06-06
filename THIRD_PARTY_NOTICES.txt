@@ -1,0 +1,35 @@
+parakeet.cpp Windows CUDA Build - Third Party Notices
+
+This bundle redistributes a native Windows x64 CUDA build of parakeet.cpp plus one GGUF model file.
+
+parakeet.cpp runtime
+- Source: https://github.com/mudler/parakeet.cpp
+- License: MIT
+- Copyright: parakeet.cpp authors
+- Full license included at licenses/parakeet.cpp-MIT-LICENSE.txt
+
+GGML
+- Source: https://github.com/ggml-org/ggml, vendored by parakeet.cpp
+- License: MIT
+- Full license included at licenses/ggml-MIT-LICENSE.txt
+
+Model weights
+- File: models/tdt_ctc-110m-f16.gguf
+- Source repository: https://huggingface.co/mudler/parakeet-cpp-gguf
+- Source checkpoint listed by model card: nvidia/parakeet-tdt_ctc-110m
+- License listed by model card: Creative Commons Attribution 4.0 International (CC-BY-4.0)
+- Attribution: GGUF weights from mudler/parakeet-cpp-gguf, derived from NVIDIA NeMo Parakeet checkpoints.
+- License URL: https://creativecommons.org/licenses/by/4.0/
+
+NVIDIA CUDA runtime libraries
+- Files included: cudart64_12.dll, cublas64_12.dll, cublasLt64_12.dll
+- Source: NVIDIA CUDA Toolkit 12.8 installed on the build machine
+- NVIDIA CUDA Toolkit EULA lists CUDA Runtime and CUDA BLAS Windows DLLs as redistributable with applications. nvcuda.dll is not included; it is supplied by the target machine's NVIDIA driver.
+- EULA URL: https://docs.nvidia.com/cuda/eula/index.html
+
+Microsoft Visual C++ runtime libraries
+- Files included: msvcp140.dll, vcruntime140.dll, vcruntime140_1.dll
+- Source: Microsoft Visual Studio Build Tools 2022 redist/runtime installation on the build machine.
+
+No warranty
+- This package is provided as a convenience binary build. It is not an official release by the parakeet.cpp maintainers, NVIDIA, Microsoft, Hugging Face, or ggml.
