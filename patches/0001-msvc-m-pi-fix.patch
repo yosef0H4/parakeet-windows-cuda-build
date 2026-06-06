@@ -1,0 +1,43 @@
+diff --git a/src/fft.cpp b/src/fft.cpp
+index ad3bee3..2c3f159 100644
+--- a/src/fft.cpp
++++ b/src/fft.cpp
+@@ -6,6 +6,8 @@
+ 
+ namespace pk {
+ 
++constexpr double kPi = 3.141592653589793238462643383279502884;
++
+ // Iterative radix-2 Cooley-Tukey FFT (in-place, complex double buffer).
+ // n must be a power of 2.
+ static void fft_inplace(std::vector<double>& re, std::vector<double>& im) {
+@@ -25,7 +27,7 @@ static void fft_inplace(std::vector<double>& re, std::vector<double>& im) {
+ 
+     // Butterfly stages
+     for (int len = 2; len <= n; len <<= 1) {
+-        double ang = -2.0 * M_PI / len;
++        double ang = -2.0 * kPi / len;
+         double wr = std::cos(ang);
+         double wi = std::sin(ang);
+         for (int i = 0; i < n; i += len) {
+diff --git a/src/mel_gpu.cpp b/src/mel_gpu.cpp
+index 9bba0f5..bf3583b 100644
+--- a/src/mel_gpu.cpp
++++ b/src/mel_gpu.cpp
+@@ -11,6 +11,7 @@ namespace pk {
+ // CONSTANT epsilon added to std in NeMo normalize_batch (features.py: 1e-5).
+ // Kept identical to MelFrontend::compute so the per-feature norm matches.
+ static constexpr double kNormEps = 1e-5;
++static constexpr double kPi = 3.141592653589793238462643383279502884;
+ 
+ GpuMel::GpuMel(const ModelLoader& ml) : k_(ml) {
+     // DFT basis matching pk::rfft's convention (no normalization), so the matmul
+@@ -21,7 +22,7 @@ GpuMel::GpuMel(const ModelLoader& ml) : k_(ml) {
+     const int B = k_.n_bins_;
+     dft_cos_.assign((size_t)B * N, 0.0f);
+     dft_sin_.assign((size_t)B * N, 0.0f);
+-    const double two_pi = 2.0 * M_PI;
++    const double two_pi = 2.0 * kPi;
+     for (int b = 0; b < B; ++b) {
+         for (int n = 0; n < N; ++n) {
+             const double ang = two_pi * (double)b * (double)n / (double)N;

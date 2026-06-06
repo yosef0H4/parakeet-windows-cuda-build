@@ -4,6 +4,8 @@ Unofficial convenience build of [mudler/parakeet.cpp](https://github.com/mudler/
 
 This release is meant for people who want to run `parakeet-cli.exe` or embed `parakeet.dll` from a Rust app without spending a long time compiling ggml CUDA kernels locally.
 
+If you want to rebuild with your own CUDA architecture, CUDA Toolkit, or model choice, see [BUILD_FROM_SOURCE.md](BUILD_FROM_SOURCE.md).
+
 ## Release Asset
 
 Download the release asset:
